@@ -1,13 +1,9 @@
 ## Weather-Service
 
 ### Running Application
-- to run the application, go to root directory and type
-- 
+- to run the application, go to root directory and run
+ 
 ```go run main.go```
-
-### Testing Application
-
-```go test ./...```
 
 ### Future Considerations
 
@@ -16,3 +12,4 @@
 - Add granular validation for the incoming lat/lon params
 - Potentially, wrap the main() functionality into a command for better usabliity 
 - The configuration package needs to have a single environment reader
+- Add tests for the WeatherAPI interface and the server handler
