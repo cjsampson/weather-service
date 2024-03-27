@@ -1,29 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/cjsampson/weather-service/app/conf"
+	"github.com/cjsampson/weather-service/httpweb"
+	"github.com/cjsampson/weather-service/httpweb/server"
+	plog "github.com/cjsampson/weather-service/platform/logger"
 )
 
 func main() {
-	http.HandleFunc("/weather", getWeather)
-	fmt.Println("Server is running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
-}
+	logger := plog.New(conf.LoadLogConfig())
 
-func getWeather(r http.ResponseWriter, req *http.Request) {
-	var (
-		lat  = req.URL.Query().Get("longitude")
-		long = req.URL.Query().Get("latitude")
-		url  = "https://api.openweathermap.org/data/2.5/weather"
-		// ?q=London,uk&APPID=049dec87e84ff02bcf0902e1ad44f1c8"
-	)
+	weatherConf := conf.LoadWeatherConfig()
 
-	fmt.Printf("response: %v\n", resp)
+	handler := httpweb.NewHandler(weatherConf)
 
-	resp, err := http.Get(uri)
-	if err != nil {
-		log.Fatalf("http.Get failed - %v\n", err.Error())
+	mux := http.NewServeMux()
+	mux.HandleFunc("/weather", handler.ServeHTTP)
+
+	serve := server.NewServerState(mux, logger)
+	if err := serve.Start(); err != nil {
+		logger.Error("server.StartServer error - %v\n", err)
 	}
 }
